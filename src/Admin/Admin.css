@@ -1,0 +1,26 @@
+/* #bigDog {
+    width: 100%;
+    display: flex;
+} */
+
+.table {
+    
+}
+
+
+#smallDiv {
+    width: 220px;
+}
+
+@media(max-width: 800px) {
+    #switch {
+        flex-direction: column;
+        align-items: center;
+        height: 180px;
+    }
+    #smallDiv {
+        width: 285px;
+    }
+}
+
+

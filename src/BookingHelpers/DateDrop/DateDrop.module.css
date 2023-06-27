@@ -1,0 +1,8 @@
+.cool {
+    border: none;
+    background-color: white;
+    font-size: 14px;
+    border: 1px solid black;
+    box-shadow: 0px 0px 4px #f9e9f9;
+    padding: 8px;
+}

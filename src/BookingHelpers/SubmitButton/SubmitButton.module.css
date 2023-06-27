@@ -1,0 +1,12 @@
+#subButton {
+    padding:6px 8px;
+    box-shadow: 0px 0px 4px #f9e9f9;
+    border: none;
+    font-size: 14px;
+    margin-left: 10px;
+    background-color: rgb(24,24,24);
+}
+
+#subButton:hover {
+    box-shadow: 0px 0px 2px #f9e9f9;
+}
