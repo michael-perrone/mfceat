@@ -53,13 +53,13 @@ function DateDrop(props) {
 
     return (
         <div style={{display: "inline"}}>
-            <select className={styles.cool} value={month} onChange={setNewMonth}>
+            <select style={{width: props.small ? "90px" : "120px"}} className={styles.cool} value={month} onChange={setNewMonth}>
                 {monthsArray.map(element => <option key={element}>{element}</option>)}
             </select>
-            <select className={styles.cool} style={{marginLeft: "8px"}} value={day} onChange={setNewDay}>
+            <select className={styles.cool} style={{marginLeft: "8px", width: props.small ? "50px" : "70px"}} value={day} onChange={setNewDay}>
                 {days.map(element => <option key={element}>{element}</option>)}
             </select>
-            <select className={styles.cool} style={{marginLeft: "8px"}} value={year} onChange={setNewYear}>
+            <select className={styles.cool} style={{marginLeft: "8px", width: props.small ? "60px" : "90px"}} value={year} onChange={setNewYear}>
                 {years.map(element => <option key={element}>{element}</option>)}
             </select>
         </div>

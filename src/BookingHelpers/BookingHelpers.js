@@ -10,27 +10,24 @@ import SelectOneList from "./SelectOneList/SelectOneList";
 // import x from './x.png'
 import {withRouter} from 'react-router-dom';
 import styles from './BookingHelper.module.css';
+import {getFirestore, doc, setDoc, where, Firestore, collection} from 'firebase/firestore';
+import { getDoc, query } from "firebase/firestore";
+import {firebaseConfig} from '../utils';
+import { initializeApp } from 'firebase/app';
 
 
   function BookingHelpers(props) {
-    const [cloneBooking, setCloneBooking] = useState();
-    const [dateString, setDateString] = useState("");
-    const [numberOfTimesToClone, setNumberOfTimesToClone] = useState("1");
     const [time, setTime] = useState(getTimeRightAway);
-    const [daysBetweenBookings, setDaysBetweenBookings] = useState("1");
     const [times, setTimes] = useState([]);
-    const [selectedServices, setSelectedServices] = useState([]);
-    const [successMessage, setSuccessMessage] = useState("");
-    const [error, setError] = useState("");
-    const [employeesBack, setEmployeesBack] = useState([]);
-    const [bcnArray, setBcnArray] = useState();
     const [selectedEmployee, setSelectedEmployee] = useState();
     const [customerFound, setCustomerFound] = useState();
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [selectedBcn, setSelectedBcn] = useState("");
     const [registeringNewGuest, setRegisteringNewGuest] = useState(false);
     const [newGuestName, setNewGuestName] = useState("");
-    const [employeeNeeded, setEmployeeNeeded] = useState();
+    const [numAtTable, setNumAtTable] = useState("");
+    const [memberNumber, setMemberNumber] = useState("");
+    const [date, setDate] = useState(new Date().toDateString())
+    const [tableNum, setTableNum] = useState('');
     const [employees, setEmployees] = useState(['scott', 'robert', 'sarah', 'jill'])
     const schedule = [{open: "12:00 PM", close: "7:00 PM"},
         {open: "", close: ""},
@@ -42,59 +39,16 @@ import styles from './BookingHelper.module.css';
     ];
 
 
-    function createBooking() {
-     // data = ["phone": phone ,"timeStart": timeStart, "date": date, "serviceIds": serviceIdsArray,
-      // "businessId": Utilities().decodeAdminToken()!["businessId"], "bcn": selectedBcn, "cost": costForTable]
-      if (phoneNumber === "") {
-        setError("");
-        setTimeout(() => setError("Please fill in phone number"), 200);
-      }
-      if (!registeringNewGuest && !customerFound) {
-        setError("");
-        setTimeout(() => setError("Please fill in phone number"), 200);
-      }
-      if (registeringNewGuest && newGuestName === "") {
-        setError("");
-        setTimeout(() => setError("Please fill in new guest name"), 200);
-      }
-
-    // if (bookingType === "Regular") {
-    //   Axios.post("api/iosBooking/admin", selectedBcn ? {phone: phoneNumber, timeStart: time, date: dateString, serviceIds: selectedServices,
-    //     businessId: props.admin.admin.businessId, bcn: selectedBcn, employeeId: selectedEmployee } : {phone: phoneNumber, timeStart: time, date: dateString,
-    //       serviceIds: selectedServices, businessId: props.admin.admin.businessId,  employeeId: selectedEmployee}).then(
-    //    response => {
-    //      if (response.status === 200) {
-    //          setEmployeesBack([]);
-    //          setSelectedEmployee();
-    //          setPhoneNumber("");
-    //          setNewGuestName("");
-    //          setCustomerFound();
-    //          setSelectedBcn("");
-    //          setSuccessMessage("");
-    //          setTimeout(() => setSuccessMessage("Booking successfully created"), 200);
-    //          props.loadSchedule(); // check this
-    //        }
-    //      }
-    //     ).catch(error => {
-    //     console.log(error)
-    //     })
-    //   }
-    }
-
-
-    function toSetDateString(dateString1) {
-          setDateString(dateString1)
-    }
 
     function findGuest() {
         // use member number instead
     }
 
-    function toSetBcn(bcn) {
-      return function() {
-        setSelectedBcn(bcn);
-      }
-    }
+    // function toSetBcn(bcn) {
+    //   return function() {
+    //     setSelectedBcn(bcn);
+    //   }
+    // }
 
     function removeFound() {
       setCustomerFound();
@@ -118,8 +72,8 @@ import styles from './BookingHelper.module.css';
 
     useEffect(function() {
         let dater = new Date();
-            if (dateString !== "") {
-                dater = new Date(dateString);
+            if (date !== "") {
+                dater = new Date(date);
             }
             const weekDayNum = dater.getDay();
             const newTimes = [];
@@ -136,10 +90,24 @@ import styles from './BookingHelper.module.css';
             }
             timeRightAway === "" ? setTime(stringToIntTime[schedule[weekDayNum].open]) : setTime(timeRightAway); 
             setTimes(newTimes);
-     }, [dateString])
+     }, [date])
 
     //appear={employeesBack.length > 0 && (bcnArray === undefined || (bcnArray && bcnArray.length > 0))}
 
+    async function booko() {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    
+        const newCityRef = doc(collection(db, "res"));
+
+        await setDoc(newCityRef, {
+          table_num: tableNum,
+          time,
+          date: date,
+          mem_num: memberNumber
+        });
+    
+      }
 
 
     return (
@@ -150,7 +118,7 @@ import styles from './BookingHelper.module.css';
               <p onClick={props.hideMe} style={{fontSize: "18px", cursor: 'pointer', fontWeight: 'bold', marginTop: "20px", textAlign: "center", position: 'relative', right: "20px"}}>Create Table:</p>
               <div style={{marginTop: "32px"}}>
                 <p className={styles.ptags}>Select Date:</p>
-                <DateDrop setDateString={(dateString) => toSetDateString(dateString)}/>
+                <DateDrop small={true} setDateString={setDate}/>
               </div>
               <div style={{marginTop: "26px"}}>
                    <p className={styles.ptags}>Select Time:</p>
@@ -164,11 +132,11 @@ import styles from './BookingHelper.module.css';
               </div>
               <div style={{display: 'flex'}}>
             <p style={{fontWeight: "bold", fontSize: "18px", paddingRight: "10px", paddingTop: "3px"}}>Member Number:</p>
-            <input placeholder="#" style={{width: '100px', paddingLeft: "6px"}}/>
+            <input onChange={(e) => setMemberNumber(e.target.value)} value={memberNumber} placeholder="#" style={{width: '100px', paddingLeft: "6px"}}/>
             </div>
             <div style={{display: 'flex', height: "60px", paddingTop: "50px"}}>
             <p style={{fontWeight: "bold", fontSize: "18px", paddingRight: "10px", paddingTop: "3px"}}>Table Number:</p>
-            <select style={{height: "30px", border: "1px solid black", paddingLeft: "5px", width: "80px"}}>
+            <select value={tableNum} onChange={(e) => setTableNum(e.target.value)} style={{height: "30px", border: "1px solid black", paddingLeft: "5px", width: "80px"}}>
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -191,10 +159,8 @@ import styles from './BookingHelper.module.css';
                 <option>20</option>
                 <option>21</option>
             </select>
-
-            
             </div>
-            <button style={{height: '40px', width: "150px", marginBottom: "20px", marginTop: "30px"}}>Create Table</button>
+            <button onClick={booko} style={{height: '40px', width: "150px", marginBottom: "20px", marginTop: "30px"}}>Create Table</button>
               </div>
         </div>
         {/* <OtherAlert showAlert={successMessage !== ""} alertMessage={successMessage} alertType={"success"}/> */}

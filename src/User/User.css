@@ -5,14 +5,14 @@
     align-items: c;
     width: 100%;
     background-image: url('mfcbacko.jpg');
-    height: 100vh;
+    height: 110vh;
   }
   
   .cover {
       background-color: rgb(0, 0, 0);
       width: 100%;
       position: absolute;
-      height: 100vh;
+      height: 110vh;
       opacity: 70%;
       display: flex;
       justify-content: center;
@@ -39,15 +39,15 @@
   }
   
   #cool {
-      width: 350px;
+      width: 330px;
       background: rgba(255, 255, 255, 0.449);
-      height: 450px;
+     height: 500px;
       margin-top: 30px;   
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       padding-left: 35px;
-      border: 2px solid white;
+      box-shadow: 0px 0px 4px white;
   }
   
   .inny {
